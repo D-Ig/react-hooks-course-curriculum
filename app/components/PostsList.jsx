@@ -1,18 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import PostMetaInfo from './PostMetaInfo';
 import Title from './Title';
 
-export default function PostsList({ posts }) {
+function PostsList({ posts }) {
   if (posts.length === 0) {
-    return <p className="center-text">This user hasn't posted yet</p>;
+    return <p className='center-text'>This user hasn&apos;t posted yet</p>;
   }
 
   return (
     <ul>
-      {posts.map((post) => {
+      {posts.map(post => {
         return (
-          <li key={post.id} className="post">
+          <li key={post.id} className='post'>
             <Title url={post.url} title={post.title} id={post.id} />
             <PostMetaInfo
               by={post.by}
@@ -28,5 +29,7 @@ export default function PostsList({ posts }) {
 }
 
 PostsList.propTypes = {
-  posts: PropTypes.array.isRequired,
+  posts: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
+
+export default PostsList;

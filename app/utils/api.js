@@ -17,36 +17,33 @@ function onlyPosts(posts) {
   return posts.filter(({ type }) => type === 'story');
 }
 
-export function fetchItem(id) {
-  return fetch(`${api}/item/${id}${json}`).then((res) => res.json());
+export async function fetchItem(id) {
+  const res = await fetch(`${api}/item/${id}${json}`);
+  return res.json();
 }
 
-export function fetchComments(ids) {
-  return Promise.all(ids.map(fetchItem)).then((comments) =>
-    removeDeleted(onlyComments(removeDead(comments)))
-  );
+export async function fetchComments(ids) {
+  const comments = await Promise.all(ids.map(fetchItem));
+  return removeDeleted(onlyComments(removeDead(comments)));
 }
 
-export function fetchMainPosts(type) {
-  return fetch(`${api}/${type}stories${json}`)
-    .then((res) => res.json())
-    .then((ids) => {
-      if (!ids) {
-        throw new Error(`There was an error fetching the ${type} posts.`);
-      }
-
-      return ids.slice(0, 50);
-    })
-    .then((ids) => Promise.all(ids.map(fetchItem)))
-    .then((posts) => removeDeleted(onlyPosts(removeDead(posts))));
+export async function fetchMainPosts(type) {
+  const res = await fetch(`${api}/${type}stories${json}`);
+  const ids = await res.json();
+  if (!ids) {
+    throw new Error(`There was an error fetching the ${type} posts.`);
+  }
+  const limitedIds = ids.slice(0, 50);
+  const posts = await Promise.all(limitedIds.map(fetchItem));
+  return removeDeleted(onlyPosts(removeDead(posts)));
 }
 
-export function fetchUser(id) {
-  return fetch(`${api}/user/${id}${json}`).then((res) => res.json());
+export async function fetchUser(id) {
+  const res = await fetch(`${api}/user/${id}${json}`);
+  return res.json();
 }
 
-export function fetchPosts(ids) {
-  return Promise.all(ids.map(fetchItem)).then((posts) =>
-    removeDeleted(onlyPosts(removeDead(posts)))
-  );
+export async function fetchPosts(ids) {
+  const posts = await Promise.all(ids.map(fetchItem));
+  return removeDeleted(onlyPosts(removeDead(posts)));
 }

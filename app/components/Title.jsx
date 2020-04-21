@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
-export default function Title({ url, title, id }) {
+function Title({ url, title, id }) {
   return url ? (
-    <a className="link" href={url}>
+    <a className='link' href={url}>
       {title}
     </a>
   ) : (
-    <Link className="link" to={`/post?id=${id}`}>
+    <Link className='link' to={`/post?id=${id}`}>
       {title}
     </Link>
   );
@@ -19,3 +19,9 @@ Title.propTypes = {
   title: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
 };
+
+Title.defaultProps = {
+  url: null,
+};
+
+export default Title;

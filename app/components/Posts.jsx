@@ -1,60 +1,54 @@
-import React from 'react';
+import React, { useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { fetchMainPosts } from '../utils/api';
+
 import Loading from './Loading';
 import PostsList from './PostsList';
+import { fetchMainPosts } from '../utils/api';
 
-export default class Posts extends React.Component {
-  state = {
-    posts: null,
-    error: null,
-    loading: true,
-  };
-  componentDidMount() {
-    this.handleFetch();
+const initialState = {
+  error: null,
+  loading: true,
+  posts: null,
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'request':
+      return { ...state, loading: true };
+    case 'success':
+      return { posts: action.payload, loading: false, error: null };
+    case 'failure':
+      return { ...state, loading: false, error: action.payload.message };
+    default:
+      throw new Error('unknown action');
   }
-  componentDidUpdate(prevProps) {
-    if (prevProps.type !== this.props.type) {
-      this.handleFetch();
-    }
+};
+
+function Posts({ type }) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    dispatch({ type: 'request' });
+    fetchMainPosts(type)
+      .then(posts => dispatch({ type: 'success', payload: posts }))
+      .catch(err => dispatch({ type: 'failure', payload: err }));
+  }, [type]);
+
+  const { error, loading, posts } = state;
+
+  if (loading) {
+    return <Loading />;
   }
-  handleFetch() {
-    this.setState({
-      posts: null,
-      error: null,
-      loading: true,
-    });
 
-    fetchMainPosts(this.props.type)
-      .then((posts) =>
-        this.setState({
-          posts,
-          loading: false,
-          error: null,
-        })
-      )
-      .catch(({ message }) =>
-        this.setState({
-          error: message,
-          loading: false,
-        })
-      );
+  if (error) {
+    return <p className='center-text error'>{error}</p>;
   }
-  render() {
-    const { posts, error, loading } = this.state;
 
-    if (loading === true) {
-      return <Loading />;
-    }
-
-    if (error) {
-      return <p className="center-text error">{error}</p>;
-    }
-
-    return <PostsList posts={posts} />;
-  }
+  return <PostsList posts={posts} />;
 }
 
 Posts.propTypes = {
-  type: PropTypes.oneOf(['top', 'new']),
+  type: PropTypes.oneOf(['top', 'new']).isRequired,
 };
+
+export default Posts;

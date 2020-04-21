@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import PostMetaInfo from './PostMetaInfo';
 
-export default function Comment({ comment }) {
+function Comment({ comment }) {
   return (
-    <div className="comment">
+    <div className='comment'>
       <PostMetaInfo
-        comment={true}
+        comment
         by={comment.by}
         time={comment.time}
         id={comment.id}
@@ -15,3 +16,10 @@ export default function Comment({ comment }) {
     </div>
   );
 }
+
+Comment.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  comment: PropTypes.object.isRequired,
+};
+
+export default Comment;
